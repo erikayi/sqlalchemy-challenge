@@ -114,11 +114,12 @@ def tobs():
     
     session = Session(engine)
 
-    last_year = dt.date.today() - dt.timedelta(days=365)
+    end_date = '2017-08-23'
+    begin_date = '2016-08-22'
 
     temperature = session.query(Measurement.station, Measurement.tobs, Measurement.date).\
-                    filter(Measurement.station == 'USC00519281').\
-                    filter(Measurement.date >= last_year).\
+                    filter(Measurement.date >= begin_date).\
+                    filter(Measurement.date <= end_date).\
                     order_by(Measurement.tobs.desc()).all()
     
     session.close()
@@ -140,14 +141,47 @@ def start():
 
     # When given the start only, calculate TMIN, TAVG, and TMAX 
     # for all dates greater than and equal to the start date.
+    session = Session(engine)
+
+    start_date = dt.datetime(2016,8,22)
+
+    start_year = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                 filter(Measurement.date >= start_date).all()
+
+    session.close()
+
+    start = []
+    for tobs in start_year:
+        start_dict = {}
+        start_dict["tobs"] = temperature
+        start_dict["date"] = date
+        start.append(start_dict)
+
+    return jsonify(start)
 
 @app.route("/api/v1.0/start/end")
 def end():
 
     # When given the start and the end date, calculate the TMIN, TAVG, and TMAX 
     # for dates between the start and end date inclusive.
+    session = Session(engine)
 
+    start_date = dt.datetime(2016,8,22)
+    end_date = dt.datetime(2017,8,23)
 
+    start_end_year = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+
+    session.close()
+
+    end = []
+    for tobs in start_end_year:
+        end_dict = {}
+        end_dict["tobs"] = temperature
+        end_dict["date"] = date
+        end.append(end_dict)
+
+    return jsonify(end)
 
 if __name__ == "__main__":
     app.run(debug=True)
