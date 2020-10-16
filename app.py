@@ -151,9 +151,9 @@ def start():
     session.close()
 
     start = []
-    for tobs in start_year:
+    for tobs,date in start_year:
         start_dict = {}
-        start_dict["tobs"] = temperature
+        start_dict["tobs"] = tobs
         start_dict["date"] = date
         start.append(start_dict)
 
@@ -175,9 +175,9 @@ def end():
     session.close()
 
     end = []
-    for tobs in start_end_year:
+    for tobs,date in start_end_year:
         end_dict = {}
-        end_dict["tobs"] = temperature
+        end_dict["tobs"] = tobs
         end_dict["date"] = date
         end.append(end_dict)
 
